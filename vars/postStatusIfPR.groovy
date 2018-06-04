@@ -1,5 +1,5 @@
-def call(String state, String target_url, String description, String context, String user, String repository, String hash, String credentialsToken) {
+def call(String JSON, String user, String repository, String hash, String credentialsToken) {
     script {
-        sh "curl -X POST -m 10 -d \'{\"state\": \"${state}\", \"target_url\": \"${target_url}\", \"description\": \"${description}\", \"context\": \"${context}\"}\' -u ${credentialsToken}
+        sh "curl -X POST -m 10 -d ${JSON} -u ${credentialsToken} https://api.github.com/repos/${user}/${repository}/statuses/${hash}"
     }
 }
