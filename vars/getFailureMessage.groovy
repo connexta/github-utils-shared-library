@@ -23,7 +23,8 @@ def call(String log) {
 		regexToErrorMessages.put(".*=> has formatting issues.*", "UI Formatting Error")
 		regexToErrorMessages.put(".*cnpmjs.org.*", "Bad npm/yarn download location")
 		regexToErrorMessages.put(".*Failed to execute goal org.apache.maven.plugins:maven-checkstyle-plugin.*", "Checkstyle ruleset violation")
-		regexToErrorMessages.put(".*\\[ERROR\\] Failures:.*", "Failed Tests")
+		regexToErrorMessages.put(".*\\[ERROR\\] Failures:.*", "Failed Unit Tests")
+		regexToErrorMessages.put(".*Failed to run task: 'yarn run test' failed\\..*", "Failed UI Tests")
 		def foundFailures = false
 		def failureMessage = "<h3>Suspected Failure(s):</h3> <ul>"
 		for (mapping in regexToErrorMessages){
