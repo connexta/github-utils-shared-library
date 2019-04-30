@@ -23,7 +23,7 @@ def call(String log) {
 		regexToErrorMessages.put(".*=> has formatting issues.*", "UI Formatting Error")
 		regexToErrorMessages.put(".*cnpmjs.org.*", "Bad npm/yarn download location")
 		regexToErrorMessages.put(".*Failed to execute goal org.apache.maven.plugins:maven-checkstyle-plugin.*", "Checkstyle ruleset violation")
-		regexToErrorMessages.put(".*\\[ERROR\\] Failures:.*", "Failed Unit Tests")
+		regexToErrorMessages.put(".*Tests run: \\d+,.*(Failures|Errors): [1-9].*", "Failed Unit Tests")
 		regexToErrorMessages.put(".*Failed to run task: 'yarn run test' failed\\..*", "Failed UI Tests")
 		def foundFailures = false
 		def failureMessage = "<h3>Suspected Failure(s):</h3> <ul>"
@@ -48,23 +48,34 @@ def formatForJSON(String message) {
 	message = message.replaceAll("\"", "\\\\\"")
 	message = message.replaceAll("\n", "\\\\n")
 	message = message.replaceAll("\t", "\\\\t")
+	message = message.replaceAll("'", "\\\\\"")
 	return message
 }
 
 def getTestFailures(String log) {
 	def maxStackTraceLength = 500
-	def failureStart = log.indexOf("[ERROR] Failures: ")
-	def failedTestsMessage = ""
-		if (failureStart != -1) {
-			def failureEnd = log.indexOf("[ERROR] Tests run:", failureStart)
-			failedTestsMessage = "\n\n```\n"
-			if (failureEnd - failureStart > maxStackTraceLength) {
-				failedTestsMessage += log.substring(failureStart, failureStart + maxStackTraceLength) + "..."
-			} else {
-				failedTestsMessage += log.substring(failureStart, failureEnd)
-			}
-			failedTestsMessage += "\n```\n"
-		}
+	def foundFailures = false
+	def failedTestsMessage = "<h4>Failed Tests:</h4> <ul>"
+	def failedTestPattern = Pattern.compile("[a-z].*<<< (FAILURE|ERROR)!\n")
+	def failedTestMatcher = failedTestPattern.matcher(log)
+	while(failedTestMatcher.find()) {
+		foundFailure = true
+		def res = failedTestMatcher.group()
+		failedTestsMessage += "<li>" + res.substring(0, res.indexOf(" Time elapsed")) + "</li>"
+	}
+	failedTestsMessage += "</ul>"
+
+	if (!foundFailure) {
+		return ""
+	}
+	
+	failedTestsMessage += "\n\n```\n"
+	def failedStartPattern = Pattern.compile("Tests run: \\d+,.*(Failures|Errors): [1-9]")
+	def failedStartMatcher = failedStartPattern.matcher(log)
+	if (failedStartMatcher.find()) {
+		failedTestsMessage += log.substring(failedStartMatcher.start(), Math.min(failedStartMatcher.start() + maxStackTraceLength, log.length())) + "...\n"
+	}
+	failedTestsMessage += "\n```\n"
 	return failedTestsMessage
 }
 
