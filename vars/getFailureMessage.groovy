@@ -59,13 +59,13 @@ def getTestFailures(String log) {
 	def failedTestPattern = Pattern.compile("[a-z].*<<< (FAILURE|ERROR)!\n")
 	def failedTestMatcher = failedTestPattern.matcher(log)
 	while(failedTestMatcher.find()) {
-		foundFailure = true
+		foundFailures = true
 		def res = failedTestMatcher.group()
 		failedTestsMessage += "<li>" + res.substring(0, res.indexOf(" Time elapsed")) + "</li>"
 	}
 	failedTestsMessage += "</ul>"
 
-	if (!foundFailure) {
+	if (!foundFailures) {
 		return ""
 	}
 	
