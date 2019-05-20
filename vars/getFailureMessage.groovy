@@ -10,7 +10,7 @@ def call(String log) {
 		regexToErrorMessages.put(".*One or more dependencies were identified with vulnerabilities that have a CVSS score greater.*", "OWASP: Vulnerability Found")
 		regexToErrorMessages.put(".*Could not transfer artifact.*from/to office.*", "An error occurred while downloading dependencies from nexus")
 		regexToErrorMessages.put(".*Unable to download the NVD CVE data.*", "OWASP NVD CVE data download failure")
-		regexToErrorMessages.put(".*maven-compiler-plugin.*Compilation failure:.*", "Compiler Failure: maven-compiler-plugin failed to compile project")
+		regexToErrorMessages.put("(.*maven-compiler-plugin.*Compilation failure:.*)|(.*COMPILATION ERROR.*)", "Compiler Failure: maven-compiler-plugin failed to compile project")
 		regexToErrorMessages.put(".*Could not resolve dependencies for project.*", "Dependency Resolution Error")
 		regexToErrorMessages.put(".*project (.*): Failed to run task: 'npm install.*", "NPM Install Failure: npm install task failed on project")
 		regexToErrorMessages.put(".*Found.*non-complying files, failing build.*", "Code Formatting Violations (fmt-maven-plugin)")
@@ -25,6 +25,7 @@ def call(String log) {
 		regexToErrorMessages.put(".*Failed to execute goal org.apache.maven.plugins:maven-checkstyle-plugin.*", "Checkstyle ruleset violation")
 		regexToErrorMessages.put(".*Tests run: \\d+,.*(Failures|Errors): [1-9].*", "Failed Unit Tests")
 		regexToErrorMessages.put(".*Failed to run task: 'yarn run test' failed\\..*", "Failed UI Tests")
+		regexToErrorMessages.put(".*Failed to execute goal org.owasp:dependency-check-maven.*The download was interrupted.*", "An error occurred while downloading OWASP dependencies")
 		def foundFailures = false
 		def failureMessage = "<h3>Suspected Failure(s):</h3> <ul>"
 		for (mapping in regexToErrorMessages){
