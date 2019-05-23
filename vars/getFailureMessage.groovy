@@ -91,7 +91,7 @@ def doGenericErrorSearch(String log) {
 		errorMessage += log.substring(errorMatcher.start(), Math.min(errorMatcher.start() + maxStackTraceLength, log.length())) + "...\n"
 	}
 
-	def exceptionPattern = Pattern.compile("(?s)java\\.*.*exception")
+	def exceptionPattern = Pattern.compile("(?s)java\\..*[Ee]xception")
 	def exceptionMatcher = exceptionPattern.matcher(log)
 	if (exceptionMatcher.find()) {
 		foundFailure = true
