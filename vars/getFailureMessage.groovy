@@ -73,12 +73,10 @@ def getTestFailures(String log) {
 	}
 
 	if(failuresFound > maxFailureNum) {
-		 failedTestsMessage += "...and " + (failuresFound - maxFailureNum) + " more test failures.</ul>"
-	} else {
-		failedTestsMessage += "</ul>"
+		failedTestsMessage += "...and " + (failuresFound - maxFailureNum) + " more test failures."
 	}
 	
-	failedTestsMessage += "\n\n```\n"
+	failedTestsMessage += "</ul>\n\n```\n"
 	def failedStartPattern = Pattern.compile("Tests run: \\d+,.*(Failures|Errors): [1-9]")
 	def failedStartMatcher = failedStartPattern.matcher(log)
 	if (failedStartMatcher.find()) {
