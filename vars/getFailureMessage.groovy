@@ -55,22 +55,28 @@ def formatForJSON(String message) {
 
 def getTestFailures(String log) {
 	def maxStackTraceLength = 500
-	def foundFailures = false
+	def failuresFound = 0
 	def failedTestsMessage = "<h4>Failed Tests:</h4> <ul>"
 	def failedTestPattern = Pattern.compile("[a-z].*<<< (FAILURE|ERROR)!\n")
 	def failedTestMatcher = failedTestPattern.matcher(log)
+	def maxFailureNum = 25
 	while(failedTestMatcher.find()) {
-		foundFailures = true
-		def res = failedTestMatcher.group()
-		failedTestsMessage += "<li>" + res.substring(0, res.indexOf(" Time elapsed")) + "</li>"
+		failuresFound++
+		if(failuresFound <= maxFailureNum) {
+			def res = failedTestMatcher.group()
+			failedTestsMessage += "<li>" + res.substring(0, res.indexOf(" Time elapsed")) + "</li>"
+		}
 	}
-	failedTestsMessage += "</ul>"
 
-	if (!foundFailures) {
+	if (failuresFound == 0) {
 		return ""
 	}
+
+	if(failuresFound > maxFailureNum) {
+		failedTestsMessage += "...and " + (failuresFound - maxFailureNum) + " more test failures."
+	}
 	
-	failedTestsMessage += "\n\n```\n"
+	failedTestsMessage += "</ul>\n\n```\n"
 	def failedStartPattern = Pattern.compile("Tests run: \\d+,.*(Failures|Errors): [1-9]")
 	def failedStartMatcher = failedStartPattern.matcher(log)
 	if (failedStartMatcher.find()) {
@@ -83,7 +89,7 @@ def getTestFailures(String log) {
 def doGenericErrorSearch(String log) {
 	def foundFailure = false
 	def maxStackTraceLength = 500
-	def errorMessage = "Relevant Output: \n\n```\n"
+	def errorMessage = "Potentially Relevant Output: \n\n```\n"
 	def errorPattern = Pattern.compile("(?s)Failures: [1-9]+|(?s)Errors: [1-9]+")
 	def errorMatcher = errorPattern.matcher(log)
 	if (errorMatcher.find()) {
